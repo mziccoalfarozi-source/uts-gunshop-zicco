@@ -23,7 +23,13 @@ export async function POST(request: Request) {
   if (!isAuth) return NextResponse.json({ error: 'Belum login' }, { status: 401 });
 
   const body = await request.json();
-  const newProduct = { id: Date.now().toString(), name: body.name, price: body.price };
+  const newProduct = { 
+    id: Date.now().toString(), 
+    name: body.name, 
+    price: body.price,
+    category: body.category || 'rifle',
+    stock: body.stock || 0
+  };
   
   products.push(newProduct);
   return NextResponse.json({ message: 'Produk ditambah', data: newProduct }, { status: 201 });

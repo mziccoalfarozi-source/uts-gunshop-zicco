@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -17,23 +19,71 @@ export default function Login() {
     
     if (res.ok) {
       const data = await res.json();
-      // Simpan token ke brankas browser (LocalStorage)
       localStorage.setItem('token', data.token);
-      router.push('/dashboard');
+      router.push('/');
     } else {
-      alert('Login Gagal: Email atau Password salah');
+      setError('Invalid email or password');
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 text-black">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6">Login Gunshop</h1>
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full mb-4 p-2 border rounded" />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required className="w-full mb-6 p-2 border rounded" />
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 font-bold">Masuk</button>
-        <p className="mt-4 text-sm text-center">Belum punya akun? <a href="/register" className="text-blue-600 font-bold">Register</a></p>
-      </form>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+      <div className="w-full max-w-md px-6">
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-1 h-8 bg-red-500"></div>
+            <h1 className="text-2xl font-bold text-white">LOGIN</h1>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="text-sm font-medium text-slate-300 block mb-2">Email</label>
+              <input 
+                type="email" 
+                placeholder="agent@arsenal.com" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)} 
+                required 
+                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-300 block mb-2">Password</label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                required 
+                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 transition-colors"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 rounded p-3">
+                <p className="text-red-400 text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-2 text-sm font-medium transition-all"
+            >
+              Login
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-slate-700/50">
+            <p className="text-sm text-slate-400">
+              No account?{' '}
+              <a href="/register" className="text-red-400 font-medium hover:text-red-300 transition-colors">
+                Register
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
